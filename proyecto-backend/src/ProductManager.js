@@ -254,4 +254,4 @@ const productManager = new ProductManager('products.json');
   await productManager.deleteProduct(13);
 })();
 
-export default productManager
+export default ProductManager
