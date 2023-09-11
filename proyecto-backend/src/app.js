@@ -1,14 +1,17 @@
-import express from "express";
-import ProductManager from "./ProductManager.js";
+import express from 'express';
+import ProductManager from './ProductManager.js';
 
 const app = express();
-
 const port = 8080;
 
-app.listen(port, () => console.log("Servidor en línea!"));
+const productManager = new ProductManager('./products.json');
 
-//La ruta /products devuelve todos los productos
-app.get("/products", (req, res) => {
-    res.send(ProductManager.getProducts())
-})
+app.listen(port, () => {
+  console.log('Servidor en línea!');
+});
 
+// La ruta /products devuelve todos los productos
+app.get('/products', async (req, res) => {
+    const products = await productManager.getProducts();
+    res.send(products);
+  });

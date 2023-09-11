@@ -252,6 +252,6 @@ const productManager = new ProductManager('products.json');
 
   //Borra el producto con ID 13
   await productManager.deleteProduct(13);
-})();
+});
 
 export default ProductManager
