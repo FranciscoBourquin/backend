@@ -47,6 +47,20 @@ class ProductManager {
     return product || null;
   }
 
+  async editProductById(id, updatedData) {
+    const products = await this.readFile();
+    const productIndex = products.findIndex((p) => p.id === id);
+
+    if (productIndex !== -1) {
+      const updatedProduct = { ...products[productIndex], ...updatedData };
+      products[productIndex] = updatedProduct;
+      await this.writeFile(products);
+      console.log(`Producto con ID ${id} ha sido editado.`);
+    } else {
+      console.log(`El producto con ID ${id} no existe.`);
+    }
+  }
+
   async deleteProduct(id) {
     const products = await this.readFile();
     const updatedProducts = products.filter((p) => p.id !== id);
