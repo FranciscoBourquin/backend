@@ -24,13 +24,18 @@ class ProductManager {
   }
 
   async addProduct(product) {
-    const products = await this.readFile();
-    if (!product.id) {
-      product.id = this.productIdCounter;
-      this.productIdCounter++;
+    try {
+      const products = await this.readFile();
+
+      const maxId = products.reduce((max, p) => (p.id > max ? p.id : max), 0);
+
+      product.id = maxId + 1;
+
+      products.push(product);
+      await this.writeFile(products);
+    } catch (error) {
+      throw error;
     }
-    products.push(product);
-    await this.writeFile(products);
   }
 
   async getProducts() {
