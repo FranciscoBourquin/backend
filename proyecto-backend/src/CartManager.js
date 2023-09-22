@@ -1,87 +1,101 @@
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, stat } from 'fs/promises';
+import ProductManager from './ProductManager.js';
 
 class CartManager {
-  constructor(productFilePath, cartFilePath) {
-    this.productFilePath = productFilePath;
+  constructor(cartFilePath) {
     this.cartFilePath = cartFilePath;
+    this.productManager = new ProductManager('src/products.json');
+    this.initCartFile();
   }
 
-  async readProducts() {
+  async initCartFile() {
+    // Verifica si el archivo 'carts.json' existe antes de la inicialización.
     try {
-      const data = await readFile(this.productFilePath, 'utf-8');
-      return JSON.parse(data);
+      await stat(this.cartFilePath);
     } catch (error) {
-      throw error;
+      // Si el archivo 'carts.json' no existe, crea un array vacío.
+      await this.writeCarts([]);
     }
   }
 
-  async readCart() {
+  async readCarts() {
     try {
       const data = await readFile(this.cartFilePath, 'utf-8');
       return JSON.parse(data);
     } catch (error) {
-      // Si el archivo no existe o no se puede leer, se crea un carrito vacío.
+      // Si el archivo no existe o no se puede leer, devuelve un array vacío.
       return [];
     }
   }
 
-  async writeCart(cart) {
+  async writeCarts(carts) {
     try {
-      await writeFile(this.cartFilePath, JSON.stringify(cart, null, 2));
+      await writeFile(this.cartFilePath, JSON.stringify(carts, null, 2));
     } catch (error) {
       throw error;
     }
   }
 
-  async addProductById(productId) {
-    const products = await this.readProducts();
-    const product = products.find((p) => p.id === productId);
+  async generateUniqueCartId() {
+    const carts = await this.readCarts();
+    let cartId = 1;
 
-    if (product) {
-      const cart = await this.readCart();
-      cart.push(product);
-      await this.writeCart(cart);
-      console.log(`Producto con ID ${productId} agregado al carrito.`);
-    } else {
-      console.log(`El producto con ID ${productId} no existe.`);
+    // Encuentra el último ID de carrito utilizado y genera uno nuevo único.
+    if (carts.length > 0) {
+      const cartIds = carts.map(cart => cart.id);
+      cartId = Math.max(...cartIds) + 1;
     }
+
+    return cartId;
   }
 
-  async deleteProductById(productId) {
-    const cart = await this.readCart();
-    const updatedCart = cart.filter((product) => product.id !== productId);
+  async createCart() {
+    const cartId = await this.generateUniqueCartId();
+    const carts = await this.readCarts();
 
-    if (cart.length !== updatedCart.length) {
-      await this.writeCart(updatedCart);
-      console.log(`Producto con ID ${productId} eliminado del carrito.`);
-    } else {
-      console.log(`El producto con ID ${productId} no está en el carrito.`);
-    }
+    const newCart = { id: cartId, products: [] };
+    carts.push(newCart);
+
+    await this.writeCarts(carts);
+
+    return cartId;
   }
 
-  async getCart() {
-    return await this.readCart();
+  async getCartProducts(cartId) {
+    const carts = await this.readCarts();
+    const cart = carts.find(cart => cart.id === cartId);
+    return cart ? cart.products : [];
+  }
+
+  async addProductToCart(cartId, productId) {
+    const carts = await this.readCarts();
+
+    const cart = carts.find(cart => cart.id === cartId);
+
+    if (!cart) {
+      throw new Error(`El carrito con ID ${cartId} no existe.`);
+    }
+
+    const product = await this.productManager.getProductById(productId);
+
+    if (!product) {
+      throw new Error(`El producto con ID ${productId} no existe.`);
+    }
+
+    // Verifica si el producto ya existe en el carrito.
+    const cartProduct = cart.products.find(item => item.id === productId);
+
+    if (cartProduct) {
+
+      cartProduct.quantity += 1;
+
+    } else {
+
+      cart.products.push({ id: productId, quantity: 1 });
+    }
+
+    await this.writeCarts(carts);
   }
 }
 
-const cartManager = new CartManager('products.json', 'cart.json');
-
-// Ejemplo de uso:
-(async () => {
-  // Agregar productos al carrito por ID
-  await cartManager.addProductById(1);
-  await cartManager.addProductById(2);
-
-  // Mostrar el contenido del carrito
-  const cartContents = await cartManager.getCart();
-  console.log('Contenido del carrito:', cartContents);
-
-  // Eliminar un producto del carrito por ID
-  await cartManager.deleteProductById(1);
-
-  // Mostrar el contenido del carrito después de eliminar un producto
-  const updatedCartContents = await cartManager.getCart();
-  console.log('Contenido del carrito actualizado:', updatedCartContents);
-})();
-
-export default CartManager
+export default CartManager;
