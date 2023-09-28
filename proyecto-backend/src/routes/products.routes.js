@@ -23,8 +23,7 @@ router.get('/', async (req, res) => {
     const products = await productManager.getProducts();
 
     const limitedProducts = limit ? products.slice(0, limit) : products;
-
-    res.send(limitedProducts);
+    res.render("home",{limitedProducts});
   });
 
   //Se devuelve solo el producto especificado en el pid
