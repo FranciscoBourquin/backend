@@ -1,0 +1,12 @@
+<h1>Nuestros productos</h1>
+{{#each limitedproducts}}
+    <ul>
+        <li>{{this.title}}</li>
+        <li>{{this.price}}</li>
+    </ul>
+{{/each}}
+
+<script src="/socket.io/socket.io.js"></script>
+<script type="module" src="/js/home.js"></script>
+
+
