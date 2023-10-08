@@ -5,6 +5,7 @@ import { productsRouter } from './routes/products.routes.js';
 import { cartRouter } from './routes/cart.routes.js';
 import {engine} from "express-handlebars";
 import {Server} from "socket.io";
+import { connectDB } from './config/dbConnection.js';
 
 const app = express();
 app.use(express.json());
@@ -34,5 +35,8 @@ app.use("/api/carts", cartRouter);
 socketServer.on("connection", (socket) => {
   console.log("Cliente conectado", socket.id);
 });
+
+//Conexión a la base de datos
+connectDB();
 
 
