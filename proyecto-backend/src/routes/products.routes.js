@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ProductManager from '../ProductManager.js';
+import { productsModel } from "../dao/models/products.model.js";
 
 const router = Router();
 
@@ -15,12 +15,11 @@ const isAdmin = (req, res, next) => {
   }
 };
 
-const productManager = new ProductManager('./src/products.json');
 
 // La ruta /products devuelve todos los productos o la cantidad que se establezca en limit
 router.get('/', async (req, res) => {
     const limit = req.query.limit;
-    const products = await productManager.getProducts();
+    const products = await productsModel.find();
 
     const limitedProducts = limit ? products.slice(0, limit) : products;
     res.render("home",{limitedProducts});
@@ -28,61 +27,80 @@ router.get('/', async (req, res) => {
 
   //Se devuelve solo el producto especificado en el pid
   router.get("/:pid", async (req, res) => {
-    const id = parseInt(req.params.pid);
-    const product = await productManager.getProductById(id);
+    const id = req.params.pid;
+    const product = await productsModel.findById(id);
     product ? res.send(product) : res.send("Producto no encontrado");
   });
 
-  //Se agrega un producto para editarlo y eliminarlo sin afectar el json original
-  router.post("/", isAdmin, async (req, res)=> {
+ // Se agrega uno o varios productos
+router.post("/", isAdmin, async (req, res) => {
+  try {
 
-    try {
+    const newProductsInfo = req.body;
 
-      const newProductInfo = req.body;
+    let productosCreados;
 
-      await productManager.addProduct(newProductInfo);
+    if (Array.isArray(newProductsInfo)) {
 
-      res.json({ message: "Producto agregado" });
-    } catch (error) {
-      res.json({ message: "Error al agregar el producto" });
+      // Si es un array de productos
+      const nuevosProductos = newProductsInfo.map(productInfo => new productsModel(productInfo));
+      productosCreados = await Promise.all(nuevosProductos.map(producto => producto.save()));
+
+    } else {
+
+      // Si es un solo producto
+      const nuevoProducto = new productsModel(newProductsInfo);
+      productosCreados = [await nuevoProducto.save()];
     }
-  });
 
-  //Se edita el producto con el id especificado
-  router.put("/:pid", isAdmin, async (req, res) => {
-    const id = parseInt(req.params.pid);
-    const newProductInfo = req.body;
+    res.json({ message: "Productos agregados correctamente", productos: productosCreados });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Error al agregar los productos" });
+  }
+});
 
-    try {
 
-      await productManager.editProductById(id, newProductInfo);
+  // Se edita el producto con el id especificado
+router.put("/:pid", isAdmin, async (req, res) => {
+  const id = req.params.pid;
+  const newProductInfo = req.body;
 
-      res.json({ message: "Producto actualizado" });
+  try {
+
+    const productoActualizado = await productsModel.findByIdAndUpdate(id, newProductInfo, { new: true });
+
+    if (productoActualizado) {
+      res.json({ message: "Producto actualizado", producto: productoActualizado });
+    } else {
+      res.status(404).json({ message: "Producto no encontrado" });
     }
-    catch (error) {
+  } catch (error) {
 
-      res.json({ message: "Error al actualizar el producto" });
+    console.error(error.message);
+    res.status(500).json({ message: "Error al actualizar el producto" });
+  }
+});
+
+
+  // Se elimina el producto con el ID especificado
+router.delete("/:pid", isAdmin, async (req, res) => {
+  try {
+    const id = req.params.pid;
+
+    const resultado = await productsModel.findOneAndDelete({ _id: id });
+
+    if (resultado) {
+      res.json({ message: "El producto se ha eliminado correctamente", producto: resultado });
+    } else {
+      res.status(404).json({ message: "No se encontró el producto con el ID especificado" });
     }
-  });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Error al eliminar el producto" });
+  }
+});
 
-  //Se elimina el producto con el id especificado
-  router.delete("/:pid", isAdmin, async (req, res) => {
-    try {
-      const id = parseInt(req.params.pid);
-      const product = await productManager.getProductById(id);
-
-      if (product) {
-
-        await productManager.deleteProduct(id);
-        res.json({ message: "El producto se ha eliminado correctamente" });
-      } else {
-
-        res.status(404).json({ message: "No se encontró el producto con el ID especificado" });
-      }
-    } catch (error) {
-      res.status(500).json({ message: "Error al eliminar el producto" });
-    }
-  });
 
 
 
