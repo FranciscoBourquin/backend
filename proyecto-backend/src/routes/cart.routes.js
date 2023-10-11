@@ -20,16 +20,30 @@ router.post("/", async (req, res) => {
   }
 });
 
+
+
 // Obtiene los productos del carrito con el id especificado
 router.get("/:cid", async (req, res) => {
   const cid = req.params.cid;
 
   try {
     const products = await cartModel.findById(cid).lean();
-    res.json({ products });
+    res.json(products);
   } catch (error) {
     console.error(`Error al obtener los productos del carrito: ${error.message}`);
     res.status(500).json({ error: "No se pudo obtener los productos del carrito" });
+  }
+});
+
+// Obtiene los todos los carritos creados
+router.get("/", async (req, res) => {
+
+  try {
+    const carts = await cartModel.find().lean();
+    res.json({carts});
+  } catch (error) {
+    console.error(`Error al obtener los carritos: ${error.message}`);
+    res.status(500).json({ error: "No se pudieron obtener los carritos" });
   }
 });
 
