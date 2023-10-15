@@ -1,9 +1,9 @@
 console.log("js para chat conectado");
 const socketClient = io();
 
-let userName = document.getElementById("userName");
-let message = document.getElementById("Inputmsg");
-let sendMsg = document.getElementById("sendMsg");
+let userName = document.getElementById("user");
+let message = document.getElementById("msg");
+let sendMsg = document.getElementById("send");
 let chatPanel = document.getElementById("chatPanel");
 
 let user;
