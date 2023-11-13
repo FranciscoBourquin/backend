@@ -12,38 +12,36 @@ sessionsRouter.post("/", async(req, res)=> {
 })
 
 sessionsRouter.get("/signup", (req, res) => {
-    const { emailError, passwordError, message } = req.session;
-    req.session.emailError = null;
-    req.session.passwordError = null;
-    req.session.message = null;
 
-    res.render("signup", { emailError, passwordError, message });
+
+    res.render("signup");
   });
 
+  sessionsRouter.post("/signup", async(req, res)=> {
+    const userInfo = req.body;
 
-sessionsRouter.post("/api/registered-users", async (req, res) => {
-    const { name, last_name, email, password } = req.body;
+try {
+  const existingEmail = await usersModel.findOne({ email: userInfo.email });
+  const existingPassword = await usersModel.findOne({ password: userInfo.password });
 
-    try {
-      const existingEmail = await usersModel.findOne({ email });
-      const existingPassword = await usersModel.findOne({ password });
-
-      if (existingEmail) {
-        req.session.emailError = "El correo ya existe";
-        return res.redirect("/signup");
-      } else if (existingPassword) {
-        req.session.passwordError = "La contraseña ya existe";
-        return res.redirect("/signup");
-      } else {
-        const user = await usersModel.create({ name, last_name, email, password });
-        req.session.message = "Registro exitoso!";
-        return res.redirect("/login");
-      }
-    } catch (error) {
-      console.log(error.message);
-      req.session.message = `Error en el registro: ${error.message}`;
-      return res.redirect("/signup");
+  if (existingEmail === null && existingPassword === null) {
+    const newUser = await usersModel.create(userInfo);
+    res.render("login", { message: "Usuario registrado exitosamente!" });
+  } else {
+    if (existingEmail !== null) {
+      res.render("signup", { emailError: "El correo ingresado ya existe" });
+    } else if (existingPassword !== null) {
+      res.render("signup", { passwordError: "La contraseña ingresada ya existe" });
     }
+  }
+} catch (error) {
+
+  res.render("signup", { error: `Error al procesar la solicitud: ${error.message}` });
+}
+
   });
+
+
+
 
 
