@@ -1,5 +1,5 @@
 <h1>Regístrate</h1>
-<form action="/api/registered-users" method="post">
+<form action="/signup" method="post">
     <label>Nombre:</label>
     <input type="text" name="name" placeholder="Ingresa tu nombre">
     <br>
@@ -9,11 +9,11 @@
     <label>Correo:</label>
     <input type="email" name="email" placeholder="Ingresa tu correo">
 
-    <div>{{session.emailError}}</div>
+    <div>{{emailError}}</div>
 
     <label>Contraseña:</label>
     <input type="password" name="password" placeholder="Ingresa tu contraseña">
-    <div>{{session.passwordError}}</div>
+    <div>{{passwordError}}</div>
     <button>Registrarse</button>
 </form>
 <br>
