@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { usersModel } from "../dao/models/users.model.js";
+import { signupModel } from "../dao/models/signup.model.js";
 
 export const sessionsRouter = Router();
 
@@ -18,14 +18,14 @@ sessionsRouter.get("/signup", (req, res) => {
   });
 
   sessionsRouter.post("/signup", async(req, res)=> {
-    const userInfo = req.body;
+    const signupInfo = req.body;
 
 try {
-  const existingEmail = await usersModel.findOne({ email: userInfo.email });
-  const existingPassword = await usersModel.findOne({ password: userInfo.password });
+  const existingEmail = await signupModel.findOne({ email: signupInfo.email });
+  const existingPassword = await signupModel.findOne({ password: signupInfo.password });
 
   if (existingEmail === null && existingPassword === null) {
-    const newUser = await usersModel.create(userInfo);
+    const newUser = await signupModel.create(signupInfo);
     res.render("login", { message: "Usuario registrado exitosamente!" });
   } else {
     if (existingEmail !== null) {
