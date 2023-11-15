@@ -1,4 +1,6 @@
 <h1>Página de perfil</h1>
+{{#if email}}
+
 <div>
     <div>Nombre: {{name}}</div>
     <div>Apellido: {{last_name}}</div>
@@ -6,3 +8,7 @@
 </div>
 
 <button type="button">Cerrar Sesión</button>
+    {{else}}
+    <p>{{message}}</p>
+
+{{/if}}
