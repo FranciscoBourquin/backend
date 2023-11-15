@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     store: MongoStore.create({
                 mongoUrl: "mongodb+srv://franbourquin89:Umee4PfDvSsLVEle@francluster.0fwaxum.mongodb.net/e-commerce?retryWrites=true&w=majority",
-                ttl: 600
+                ttl: 60000
     }),
 
     secret: "e-commerceCoder2023",
