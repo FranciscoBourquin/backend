@@ -18,11 +18,16 @@ const isAdmin = (req, res, next) => {
 
 // La ruta /products devuelve todos los productos o la cantidad que se establezca en limit
 router.get('/', async (req, res) => {
+  const user = req.session.email;
     const limit = req.query.limit;
     const products = await productsModel.find().lean();
 
-    const limitedProducts = limit ? products.slice(0, limit) : products;
-    res.render("home",{limitedProducts});
+    if (user) {
+      const limitedProducts = limit ? products.slice(0, limit) : products;
+      res.render("home",{limitedProducts, welcomeMessage: `Bienvenido ${user}`});
+    } else {
+      res.render("home",{ welcomeMessage: "Debes iniciar sesión para ver los productos"})
+    }
   });
 
   //Se devuelve solo el producto especificado en el pid
