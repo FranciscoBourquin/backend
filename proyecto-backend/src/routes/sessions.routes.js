@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { signupModel } from "../dao/models/signup.model.js";
+import { loginModel } from "../dao/models/login.model.js";
 
 export const sessionsRouter = Router();
 
@@ -37,6 +38,7 @@ sessionsRouter.post("/", async(req, res)=> {
     }
 
     else {
+      const newLogin =await loginModel.create(loginInfo);
       res.redirect("/api/products");
     }
 
@@ -52,7 +54,7 @@ sessionsRouter.get("/signup", (req, res) => {
     res.render("signup");
   });
 
-  //Validación del egistro
+  //Validación del registro
   sessionsRouter.post("/signup", async(req, res)=> {
     const signupInfo = req.body;
 
@@ -61,16 +63,26 @@ try {
   const existingPassword = await signupModel.findOne({ password: signupInfo.password });
 
   if (existingEmail === null && existingPassword === null) {
+
     const newUser = await signupModel.create(signupInfo);
+    req.session.name = signupInfo.name;
+    req.session.last_name = signupInfo.last_name;
     req. session.email = signupInfo.email;
+    req.session.password = signupInfo.password;
     res.redirect("/");
-  } else {
+  }
+
+  else {
+
     if (existingEmail !== null) {
       res.render("signup", { emailError: "El correo ingresado ya existe" });
-    } else if (existingPassword !== null) {
+    }
+
+    else if (existingPassword !== null) {
       res.render("signup", { passwordError: "La contraseña ingresada ya existe" });
     }
   }
+
 } catch (error) {
 
   res.render("signup", { error: `Error al procesar la solicitud: ${error.message}` });
@@ -79,6 +91,19 @@ try {
   });
 
 
+sessionsRouter.get("/profile", async(req, res)=> {
+  const name = req.session.name;
+  const last_name = req.session.last_name;
+  const email = req.session.email;
+  const existingUser = await loginModel.findOne({email: email});
+  if (email) {
+    res.render("profile", {name, last_name, email})
 
+  }
+  else{
+    res.render("profile", {message: "Debes iniciar sesión para ver tu perfil"})
+  }
+
+})
 
 

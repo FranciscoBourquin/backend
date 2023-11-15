@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { productsModel } from "../dao/models/products.model.js";
+import { loginModel } from "../dao/models/login.model.js";
 
 const router = Router();
 
@@ -19,12 +20,16 @@ const isAdmin = (req, res, next) => {
 // La ruta /products devuelve todos los productos o la cantidad que se establezca en limit
 router.get('/', async (req, res) => {
   const email = req.session.email;
+    const existingEmail = loginModel.findOne({email: email})
     const limit = req.query.limit;
     const products = await productsModel.find().lean();
+
     let role = "";
-    if (email) {
+
+    if (existingEmail) {
       const limitedProducts = limit ? products.slice(0, limit) : products;
-        if (email === "adminCoder@coder.com"){
+
+        if (existingEmail === "adminCoder@coder.com"){
           role = "admin"
           const name = req.session.name
           res.render("home",{limitedProducts, welcomeMessage: `Bienvenido ${role} ${name}`});
