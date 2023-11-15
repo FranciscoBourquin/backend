@@ -18,13 +18,23 @@ const isAdmin = (req, res, next) => {
 
 // La ruta /products devuelve todos los productos o la cantidad que se establezca en limit
 router.get('/', async (req, res) => {
-  const user = req.session.email;
+  const email = req.session.email;
     const limit = req.query.limit;
     const products = await productsModel.find().lean();
-
-    if (user) {
+    let role = "";
+    if (email) {
       const limitedProducts = limit ? products.slice(0, limit) : products;
-      res.render("home",{limitedProducts, welcomeMessage: `Bienvenido ${user}`});
+        if (email === "adminCoder@coder.com"){
+          role = "admin"
+          const name = req.session.name
+          res.render("home",{limitedProducts, welcomeMessage: `Bienvenido ${role} ${name}`});
+        }
+        else {
+          role = "user";
+          const name = req.session.name
+          res.render("home",{limitedProducts, welcomeMessage: `Bienvenido ${role} ${name}`});
+       }
+
     } else {
       res.render("home",{ welcomeMessage: "Debes iniciar sesión para ver los productos"})
     }
@@ -105,9 +115,5 @@ router.delete("/:pid", isAdmin, async (req, res) => {
     res.status(500).json({ message: "Error al eliminar el producto" });
   }
 });
-
-
-
-
 
 export  {router as productsRouter};
