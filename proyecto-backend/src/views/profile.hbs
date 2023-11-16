@@ -1,4 +1,7 @@
 <h1>Página de perfil</h1>
+
+<h2>{{logoutError}}</h2>
+
 {{#if email}}
 
 <div>
@@ -7,7 +10,8 @@
     <div>Correo: {{email}}</div>
 </div>
 
-<button type="button">Cerrar Sesión</button>
+<a href="/logout"> Cerrar Sesión</a>
+
     {{else}}
     <p>{{message}}</p>
 
