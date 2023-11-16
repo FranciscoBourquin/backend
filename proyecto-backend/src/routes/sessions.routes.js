@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { signupModel } from "../dao/models/signup.model.js";
-import { loginModel } from "../dao/models/login.model.js";
 
 export const sessionsRouter = Router();
 
@@ -8,15 +7,26 @@ export const sessionsRouter = Router();
 sessionsRouter.get("/", async(req, res)=> {
   const userInfo = req.body;
   const registeredEmail = await signupModel.findOne({email: req.session.email});
+  if (req.session.login === false) {
+    req.session.destroy(
+      err => {
+        if (err) {
+          req.session.error = err;
+          res.redirect("/profile");
+        }
+        else {
+          res.render("login", {message: "Cierre de sesión exitoso"})
+        }
+      }
+    )}
 
-  if (registeredEmail!== null) {
+  else if (registeredEmail!== null) {
     res.render("login", {message: "Registro exitoso"});
   }
   else {
     res.render("login")
-  }
-
-})
+  }}
+)
 
 //Validación del login
 sessionsRouter.post("/", async(req, res)=> {
@@ -25,12 +35,9 @@ sessionsRouter.post("/", async(req, res)=> {
   const existingPassword = await signupModel.findOne( { password: loginInfo.password});
 
   try {
-    if (existingEmail === null && existingPassword === null) {
-        res.render("login", {emailError: "El correo ingresado es incorrecto", passwordError: "La contraseña ingresada es incorrecta"})
-    }
 
-    else if (existingEmail === null && existingPassword !== null){
-      res.render("login", {emailError: "El correo ingresado es incorrecto"});
+        if (existingEmail === null && existingPassword === null) {
+        res.render("login", {emailError: "El correo ingresado es incorrecto", passwordError: "La contraseña ingresada es incorrecta"})
     }
 
     else if (existingEmail !== null && existingPassword === null) {
@@ -38,7 +45,7 @@ sessionsRouter.post("/", async(req, res)=> {
     }
 
     else {
-      const newLogin =await loginModel.create(loginInfo);
+      req.session.login = true
       res.redirect("/api/products");
     }
 
@@ -95,8 +102,9 @@ sessionsRouter.get("/profile", async(req, res)=> {
   const name = req.session.name;
   const last_name = req.session.last_name;
   const email = req.session.email;
-  const existingUser = await loginModel.findOne({email: email});
+  const existingUser = await signupModel.findOne({email: email});
   if (email) {
+
     res.render("profile", {name, last_name, email})
 
   }
@@ -106,4 +114,13 @@ sessionsRouter.get("/profile", async(req, res)=> {
 
 })
 
-
+sessionsRouter.get("/logout", (req, res)=> {
+ if (req.session.error) {
+  res.render("profile", {logoutError: `Error al cerrar sesión: ${req.session.error}`})
+ }
+ else {
+  req.session.login = false;
+  res.redirect("/");
+  }
+    }
+      )
