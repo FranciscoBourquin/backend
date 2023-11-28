@@ -11,6 +11,8 @@ import { chatRouter } from './routes/chat.routes.js';
 import { sessionsRouter } from './routes/sessions.routes.js';
 import { Server } from 'socket.io';
 import { connectDB } from './config/dbConnection.js';
+import passport from 'passport';
+import { initializePassport } from './config/passport.config.js';
 
 const app = express();
 const port = 8080;
@@ -32,7 +34,13 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 
-}))
+}));
+
+//Configuración passport
+initializePassport();
+app.use(passport.initialize());
+//Para poder asociar con la sesión de express-session
+app.use(passport.session());
 
 //Configuración hbs
 app.engine('.hbs', engine({ extname: '.hbs' }));
