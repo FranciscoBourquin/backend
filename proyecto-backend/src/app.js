@@ -13,6 +13,8 @@ import { Server } from 'socket.io';
 import { connectDB } from './config/dbConnection.js';
 import passport from 'passport';
 import { initializePassport } from './config/passport.config.js';
+import { config } from "./config/config.js";
+
 
 const app = express();
 const port = 8080;
@@ -26,11 +28,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 //Configuración session y mongoStore
 app.use(session({
     store: MongoStore.create({
-                mongoUrl: "mongodb+srv://franbourquin89:Umee4PfDvSsLVEle@francluster.0fwaxum.mongodb.net/e-commerce?retryWrites=true&w=majority",
+                mongoUrl: config.mongo.url,
                 ttl: 60000
     }),
 
-    secret: "e-commerceCoder2023",
+    secret: config.server.secretSession,
     resave: true,
     saveUninitialized: true
 
