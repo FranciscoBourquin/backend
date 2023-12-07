@@ -1,5 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
+import { config } from "../config/config.js";
 
 export const sessionsRouter = Router();
 
@@ -38,12 +39,28 @@ sessionsRouter.get("/signup", (req, res) => {
   }), async(req, res)=> {
 
     res.render("login", {message: "Registro exitoso"});
-    // 1:41:49
   });
 
+  //Registro con GH
+  sessionsRouter.get("/signup/github", passport.authenticate("githubSignupStrategy"));
+
+  //Callback URL
+  sessionsRouter.get(
+    config.github.callbackUrl,
+    passport.authenticate("githubSignupStrategy", {
+      failureRedirect: "/signup/error"
+    }),
+    (req, res) => {
+      // Esta parte solo se ejecutará en caso de éxito de autenticación
+      res.redirect("/profile");
+    }
+  );
+
+
+//Error de signup
 sessionsRouter.get("signup/error", (req, res)=>{
   res.render("signup", {message: "Error en el registro"});
-})
+});
 
 // Ruta de perfil con autenticación
 sessionsRouter.get("/profile", (req, res) => {
