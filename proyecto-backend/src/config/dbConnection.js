@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
+import { config } from "./config.js";
 
 export const connectDB = async() => {
     try {
 
-        await mongoose.connect("mongodb+srv://franbourquin89:Umee4PfDvSsLVEle@francluster.0fwaxum.mongodb.net/e-commerce?retryWrites=true&w=majority");
+        await mongoose.connect(config.mongo.url);
 
         console.log("Conexión a la base de datos exitosa");
 
