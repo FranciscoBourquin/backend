@@ -11,6 +11,7 @@ app.get("/", (req, res) => {
     res.send("<h1>Página de inicio</h1>");
 });
 
+//Obtenemos todos los productos o la cantidad establecida en limit
 app.get("/products", async (req, res) => {
     const limit = req.query.limit;
     if (limit) {
@@ -20,7 +21,21 @@ app.get("/products", async (req, res) => {
         res.type("json").send(jsonOutput);
     } else {
         const products = await manager.getProducts();
-        const jsonOutput = JSON.stringify(products, null, 2);
-        res.type("json").send(jsonOutput);
+        const productsJson = JSON.stringify(products, null, 2);
+        res.type("json").send(productsJson);
     }
 });
+
+//Obtenemos un producto por su id
+app.get("/products/:pid", async(req,res)=> {
+    const pid = parseInt(req.params.pid);
+    if (pid) {
+        const product = await manager.getProductById(pid);
+        const productJson = JSON.stringify(product, null, 2);
+        res.type("json").send(productJson)
+
+    } else {
+        res.send(`El producto con ID ${pid} no existe`)
+    }
+});
+
