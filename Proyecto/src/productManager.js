@@ -1,110 +1,141 @@
-//Francisco Bourquin Backend Comision #53110
-const fs = require("fs");
+import fs from "fs";
 
-class ProductManager {
-    constructor() {
+export class ProductManager {
+    constructor(path) {
         this.products = [];
-        this.productIdCounter = 1;
-        this.path = "./products.json";
+        this.idCounter = 1;
+        this.path = path
     }
 
-    //Agregar un nuevo producto
-    addProduct(title, description, price, thumbnail, code, stock) {
-        const existingProduct = this.products.find((product) => {
-            return (
-                product.title === title &&
-                product.description === description &&
-                product.price === price &&
-                product.thumbnail === thumbnail &&
-                product.code === code &&
-                product.stock === stock
-            );
-        });
-
-        //Validamos que no se repita la información
-        if (!existingProduct || !fs.existsSync(this.path)) {
-            const newProduct = {
-                id: this.productIdCounter++,
-                title,
-                description,
-                price,
-                thumbnail,
-                code,
-                stock
-            };
-            this.products.push(newProduct);
-            fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2)); // Guardamos productos después de agregar uno nuevo
-            console.log("Producto agregado correctamente.");
-        } else {
-            console.log("Ya existe un producto con la misma información. No se agregó el producto.");
-        }
-    }
-
-    // Mostramos todos los productos
-    getProducts() {
+    async getProducts() {
         try {
-            const data = fs.readFileSync(this.path, 'utf8');
-            console.log("Lista de Productos:");
-            console.log(data);
+            const data = await fs.promises.readFile(this.path, "utf8");
+            this.products = JSON.parse(data);
+            return this.products;
         } catch (error) {
-            console.log("No se pudo cargar el archivo de productos.");
+            console.error(`Error al obtener productos: ${error}`);
+            return [];
         }
     }
 
-    // Buscamos un producto por su ID
-    getProductById(id) {
-        const product = this.products.find((p) => p.id === id);
-        if (product) {
-            console.log(`Información del Producto con ID ${id}:`);
-            console.log(product);
-        } else {
-            console.log(`No se encontró ningún producto con el ID ${id}.`);
+    async getProductById(id) {
+        try {
+            const data = await fs.promises.readFile(this.path, "utf8");
+            this.products = JSON.parse(data);
+            return this.products.find(product => product.id === id) || null;
+        } catch (error) {
+            console.error(`Error al obtener producto por ID: ${error}`);
+            return null;
         }
     }
 
-    // Actualizamos un producto por su ID
-    updateProductById(id, newData) {
-        const index = this.products.findIndex(p => p.id === id);
-        if (index !== -1) {
-            this.products[index] = { ...this.products[index], ...newData };
-            fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2)); // Guardamos productos después de actualizar uno
-            console.log(`Producto con ID ${id} actualizado correctamente.`);
-        } else {
-            console.log(`No se encontró ningún producto con el ID ${id}. No se realizó ninguna actualización.`);
+    async addProduct(title, description, price, thumbnail, code, stock) {
+        try {
+            const data = await fs.promises.readFile(this.path, "utf8");
+            this.products = JSON.parse(data);
+
+            const existingProduct = this.products.find(p =>
+                p.title === title &&
+                p.description === description &&
+                p.price === price &&
+                p.thumbnail === thumbnail &&
+                p.code === code &&
+                p.stock === stock
+            );
+
+            if (!existingProduct) {
+                const newProduct = {
+                    id: this.idCounter++,
+                    title,
+                    description,
+                    price,
+                    thumbnail,
+                    code,
+                    stock
+                };
+
+                this.products.push(newProduct);
+                await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
+                console.log(`Producto agregado exitosamente`);
+            } else {
+                console.log("El producto que intentas agregar ya existe");
+            }
+        } catch (error) {
+            console.error(`Ha ocurrido un error: ${error}`);
         }
     }
 
-    // Eliminamos un producto por su ID
- deleteProductById(id) {
-  // Filtramos el arreglo para obtener solo los productos que no coincidan con el ID especificado
-  const filteredProducts = this.products.filter(product => product.id !== id);
+    async updateProductById(id, updatedField) {
+        try {
+            const data = await fs.promises.readFile(this.path, "utf8");
+            let products = JSON.parse(data);
+            const productIndex = products.findIndex(product => product.id === id);
+            if (productIndex !== -1) {
+                products[productIndex] = {
+                    ...products[productIndex],
+                    ...updatedField
+                };
+                await fs.promises.writeFile(this.path, JSON.stringify(products, null, 2));
+                console.log(`Producto actualizado exitosamente`);
+                console.log(JSON.stringify(products[productIndex], null, 2));
+            } else {
+                console.log(`No se encontró ningún producto con el ID ${id}`);
+            }
+        } catch (error) {
+            console.error(`Error al actualizar producto por ID: ${error}`);
+        }
+    }
 
-  // Actualizamos el arreglo con los productos filtrados
-  this.products = filteredProducts;
-
-  // Guardamos los cambios en el archivo JSON
-  fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
-
-  // Mostramos un mensaje de confirmación
-  console.log(`Se eliminó el producto con ID ${id}`);
-}
-
+    async deleteProductById(id) {
+        try {
+            const data = await fs.promises.readFile(this.path, "utf8");
+            let products = JSON.parse(data);
+            const productIndex = products.findIndex(product => product.id === id);
+            if (productIndex !== -1) {
+                products.splice(productIndex, 1);
+                await fs.promises.writeFile(this.path, JSON.stringify(products, null, 2));
+                console.log(`Producto con ID ${id} eliminado exitosamente`);
+            } else {
+                console.log(`No se encontró ningún producto con el ID ${id}`);
+            }
+        } catch (error) {
+            console.error(`Error al eliminar producto por ID: ${error}`);
+        }
+    }
 }
 
 const manager = new ProductManager();
-//Agregamos productos
-manager.addProduct("Celular1", "Descripcion1", 20.99, "foto1.jpg", "pc01", 10);
-manager.addProduct("Celular2", "Descripcion2", 21.99, "foto2.jpg", "pc02", 11);
-manager.addProduct("Celular3", "Descripcion3", 22.99, "foto3.jpg", "pc03", 12);
 
-// Mostramos el array con 3 productos
-manager.getProducts();
+async function operations() {
+    try {
+        // Crear 11 productos
+        await manager.addProduct("Product1", "description1", 20, "thumbnail1", "PC1", 10);
+        await manager.addProduct("Product2", "description2", 20, "thumbnail2", "PC2", 10);
+        await manager.addProduct("Product3", "description3", 20, "thumbnail3", "PC3", 10);
+        await manager.addProduct("Product4", "description4", 20, "thumbnail4", "PC4", 10);
+        await manager.addProduct("Product5", "description5", 20, "thumbnail5", "PC5", 10);
+        await manager.addProduct("Product6", "description6", 20, "thumbnail6", "PC6", 10);
+        await manager.addProduct("Product7", "description7", 20, "thumbnail7", "PC7", 10);
+        await manager.addProduct("Product8", "description8", 20, "thumbnail8", "PC8", 10);
+        await manager.addProduct("Product9", "description9", 20, "thumbnail9", "PC9", 10);
+        await manager.addProduct("Product10", "description10", 20, "thumbnail10", "PC10", 10);
+        await manager.addProduct("Product11", "description11", 20, "thumbnail11", "PC11", 10);
 
-// Actualizamos el producto con id 2
-manager.updateProductById(2, { title: "Nuevo Título", price: 25.99 });
+        // Mostrar los productos
+        console.log(await manager.getProducts());
 
-// Eliminamos el producto con id 1
-manager.deleteProductById(1);
+        // Mostrar el producto con ID 1
+        console.log(await manager.getProductById(1));
 
-// Mostramos el array actualizado
-manager.getProducts();
+        // Actualizar el producto con ID 2
+        await manager.updateProductById(2, { title: "Nuevo titulo para Product2" });
+
+        // Eliminar el producto con ID 11
+        await manager.deleteProductById(11);
+    } catch (error) {
+        console.error("Ha ocurrido un error:", error);
+    }
+}
+
+// Llamamos a la función operations
+operations();
