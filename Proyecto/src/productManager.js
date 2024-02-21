@@ -75,10 +75,10 @@ export class ProductManager {
 
             const data = await fs.promises.readFile(this.path, "utf8");
             this.products = JSON.parse(data);
-            return this.products.find(product => product.id === id) || null;
+            return this.products.find(product => product.id === id)|| `El producto com ID ${id} no existe`;
         } catch (error) {
             console.error(`Error al obtener producto por ID: ${error}`);
-            return null;
+
         }
     }
 
