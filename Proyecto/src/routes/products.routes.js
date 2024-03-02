@@ -23,7 +23,8 @@ productsRouter.get("/", async(req, res)=> {
 
 //Encontrar producto por ID
 productsRouter.get("/:pid", async(req, res)=> {
-    const pid = parseInt(req.params.pid);
+    try {
+        const pid = parseInt(req.params.pid);
 
     if (pid) {
 
@@ -34,11 +35,41 @@ productsRouter.get("/:pid", async(req, res)=> {
     } else {
         res.send(`El producto con ID ${pid} no existe`)
     }
+    } catch (error) {
+        res.send(`Ha ocurrido un error: ${error.message}`)
+    }
 });
 
 //Agregar producto
 productsRouter.post("/", async(req, res)=> {
-    const productInfo = req.body;
-    const addProduct = await manager.addProduct(productInfo);
-    res.json({message: "Producto agregado exitosamente"})
-})
+    try {
+        const productInfo = req.body;
+        const addProduct = await manager.addProduct(productInfo);
+        res.json({message: "Producto agregado exitosamente"})
+    } catch (error) {
+        res.send(`Ha ocurrido un error: ${error.message}`)
+    }
+});
+
+//Editar producto
+productsRouter.put("/:pid", async(req, res)=> {
+   try {
+    const pid = parseInt(req.params.pid);
+    const newInfo = req.body;
+    const updatedProduct = await manager.updateProductById(pid, newInfo);
+    res.json({updatedProduct: updatedProduct});
+   } catch (error) {
+    `Ha ocurrido un error ${error.message}`
+   }
+});
+
+//Eliminar producto
+productsRouter.delete("/:pid", async(req, res)=> {
+    try {
+        const pid = parseInt(req.params.pid);
+        const deleteProduct = await manager.deleteProductById(pid);
+        res.json({message: `Se ha eliminado el producto con ID ${pid}`})
+    } catch (error) {
+        `Ha ocurrido un error: ${error.message}`
+    }
+});
