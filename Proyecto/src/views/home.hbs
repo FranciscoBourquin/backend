@@ -1,0 +1,11 @@
+<h1>Home</h1>
+{{#if error}}
+    <p>Ha ocurrido un error: {{errorMessage}}</p>
+{{else}}
+    {{#each products}}
+        <ul>
+            <li>{{this.title}}</li>
+            <li>{{this.price}}</li>
+        </ul>
+    {{/each}}
+{{/if}}
