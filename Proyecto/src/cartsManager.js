@@ -8,35 +8,59 @@ export class CartsManager {
   constructor(path) {
     this.filePath = path;
     this.carts = [];
-    this.cartId = 1;
     this.productQuantity = 1
   }
 
   async createCart() {
-    try {
-      if (fs.existsSync(this.filePath)) {
-        const cartTxt = await fs.promises.readFile(this.filePath, { encoding: "utf-8" });
-        const cartJson = JSON.parse(cartTxt, null, 2);
-        this.carts = cartJson;
 
-        if (this.cartId === this.carts.length) {
-          this.cartId++;
+    try {
+
+      let maxId = 0;
+
+      if (fs.existsSync(this.filePath)) {
+
+        const cartTxt = await fs.promises.readFile(this.filePath, 'utf-8');
+
+        const carts = JSON.parse(cartTxt);
+
+        for (let cart of carts) {
+
+          if (cart.id > maxId) {
+
+            maxId = cart.id;
+
+          }
+
         }
+
       }
 
+      const newCartId = maxId + 1;
+
       const newCart = {
-        id: this.cartId,
+
+        id: newCartId,
+
         products: []
+
       };
 
-      this.carts.push(newCart);
-      const updatedCarts = await fs.promises.writeFile(this.filePath, JSON.stringify(this.carts, null, 2));
+      const carts = fs.existsSync(this.filePath) ? JSON.parse(await fs.promises.readFile(this.filePath, 'utf-8')) : [];
+
+      carts.push(newCart);
+
+      await fs.promises.writeFile(this.filePath, JSON.stringify(carts, null, 2));
 
       return newCart;
+
     } catch (error) {
+
       console.error(`Error al crear carrito: ${error.message}`);
+
       return { error: error.message };
+
     }
+
   }
 
   getCarts = async() => {
