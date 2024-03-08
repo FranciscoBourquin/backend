@@ -39,6 +39,6 @@ const manager = new ProductManager("./src/products.json");
 socketServer.on("connection", async(socket)=> {
     console.log(`Cliente conectado con ID: ${socket.id}`);
     const products = await manager.getProducts();
-    socket.emit("productsArray", {products});
+    socket.emit("productsArray", products);
 })
 
