@@ -1,0 +1,69 @@
+title Samsung Galaxy A54 5G 5G 256 GB awesome lime 8 GB RAM
+description Memoria interna:256 GB. Memoria RAM:8 GB. Color:Awesome lime
+price 810.000
+thumbnail https://http2.mlstatic.com/D_NQ_NP_708845-MLA70891131881_082023-O.webp
+stock 10
+code PC1
+
+title Samsung Galaxy A04s 4 + 128gb Negro
+description Memoria interna:128 GB. Memoria RAM: 4 GB. Color:Negro
+price 259.999
+thumbnail https://http2.mlstatic.com/D_NQ_NP_764007-MLA53347692221_012023-O.webp
+stock 10
+code PC2
+
+title Moto G23 128 GB steel blue 4 GB RAM
+description Memoria interna: 128 GB. Memoria RAM 4 GB. Color:Steel blue.
+price 299.999
+thumbnail https://http2.mlstatic.com/D_NQ_NP_648883-MLU74182500303_012024-O.webp
+stock 10
+code PC3
+
+title Notebook Dell Inspiron 3525 plata
+description Capacidad:8 GB RAM | 512 GB SSD. Sistema operativo:Windows 11 Home. Procesador:AMD Ryzen 5 5500U.
+price 699.999
+thumbnail https://http2.mlstatic.com/D_NQ_NP_696185-MLA54896761378_042023-O.webp
+stock 10
+code PC4
+
+title Notebook Asus Vivobook Go 14 Windows 11 128gb Ssd 4gb Ram Color Dreamy white
+description Procesador Intel Celeron. Memoria RAM de 4GB. Resolución de 1366x768 px.
+price 387.599
+thumbnail https://http2.mlstatic.com/D_NQ_NP_683136-MLU71107726338_082023-O.webp
+stock 10
+code PC5
+
+title Notebook Hp 15-ef2514la Ryzen 7 5700u 8gb Ram 512gb Premium
+description Color:Plata. Memoria RAM: 8 GB. Duración de la batería: 10 h.
+price 1.109.899
+thumbnail https://http2.mlstatic.com/D_NQ_NP_687332-MLA54387667220_032023-O.webp
+stock 10
+code PC6
+
+title Smart Tv Samsung 50 Un50cu7000gczb Led 4k
+description Su resolución es 4K. Tecnología HDR para una calidad de imagen mejorada.Modo de sonido: Adaptive Sound. Sistema operativo Tizen Smart TV. Conectá tus dispositivos mediante sus 3 puertos HDMI y su puerto USB. Dimensiones: 1116.8mm de ancho, 644mm de alto, 59.9mm de profundidad.
+price 559.999
+thumbnail https://http2.mlstatic.com/D_NQ_NP_712164-MLU74841568328_032024-O.webp
+stock 10
+code PC7
+
+title Smart Tv Tcl Led L32s5400 Android 32 Hd Con Hdr
+description Su resolución es Full HD. Modo de sonido: Dolby Digital. Conectá tus dispositivos mediante sus 2 puertos HDMI.
+price 214.999
+thumbnail https://http2.mlstatic.com/D_NQ_NP_965650-MLU73058619120_112023-O.webp
+stock 10
+code PC8
+
+title Smart Tv Sansei Tds2343fichpi Led Full Hd 43 Android Tv
+description Su resolución es Full HD. Con Netflix. Sistema operativo Android. Conectá tus dispositivos mediante sus 3 puertos HDMI y sus 2 puertos USB. Dimensiones: 96.7cm de ancho, 57.1cm de alto, 8.2cm de profundidad.
+price 268.999
+thumbnail https://http2.mlstatic.com/D_NQ_NP_976794-MLU74089492796_012024-O.webp
+stock 10
+code PC9
+
+title: Product10,
+description: description10,
+price: 20,
+thumbnail: "thumbnail10",
+code: "PC10",
+stock: 10
