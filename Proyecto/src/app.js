@@ -40,5 +40,12 @@ socketServer.on("connection", async(socket)=> {
     console.log(`Cliente conectado con ID: ${socket.id}`);
     const products = await manager.getProducts();
     socket.emit("productsArray", products);
+
+    //Recibimos producto a crear
+    socket.on("addProduct", async (jsonData) => {
+        const newProduct = await manager.addProduct(jsonData);
+        const products = await manager.getProductById();
+        socketServer.emit("productsArray", products);
+    })
 })
 
