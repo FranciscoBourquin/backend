@@ -1,12 +1,13 @@
-console.log("JS de real time products conectado");
-
 const socketClient = io();
 
 let productUl = document.getElementById("productList");
 const createProductForm = document.getElementById("createProductForm");
 const deleteProductForm = document.getElementById("deleteProductForm");
 
-//Enviamos info del formulario para crear producto
+// Función para eliminar producto
+const deleteProduct = productId => socketClient.emit("deleteProduct", productId);
+
+// Enviamos info del formulario para crear producto
 createProductForm.addEventListener("submit", (e)=> {
     e.preventDefault();
     const formData = new FormData(createProductForm);
@@ -18,22 +19,21 @@ createProductForm.addEventListener("submit", (e)=> {
     createProductForm.reset();
 });
 
-//Recibimos productos
+// Recibimos productos
 socketClient.on("productsArray", (productList)=> {
-    console.log(productList);
-    let liElements = ""
+    let liElements = "";
 
     productList.forEach(product => {
-        liElements+=
+        liElements +=
         `<li>nombre: ${product.title}</li>
         <img src="${product.thumbnail}"/>
         <li>precio: ${product.price}</li>
         <li>stock: ${product.stock}</li>
-        <hr />`
+        <button onclick="deleteProduct(${product.id})">Eliminar Producto</button>
+        <hr />`;
+    });
 
-    })
-    console.log(liElements);
-    productUl.innerHTML = liElements
-})
+    productUl.innerHTML = liElements;
+});
 
-//after websocket 1:10:00
+console.log(deleteProduct);
