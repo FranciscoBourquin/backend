@@ -46,6 +46,14 @@ socketServer.on("connection", async(socket)=> {
         const newProduct = await manager.addProduct(jsonData);
         const products = await manager.getProductById();
         socketServer.emit("productsArray", products);
+
+        //Recibimos id de producto a eliminar
+        socket.on("deleteProduct", async(productId)=> {
+            const deleteProduct = await manager.deleteProductById(productId);
+            const products = await manager.getProducts();
+            socketServer.emit("productsArray", products);
+
+        })
     })
 })
 
