@@ -1,7 +1,7 @@
 <h1>Productos en tiempo real</h1>
 <h2>Crear Producto</h2>
 
-<form action="/src/routes/products.routes.js" method="post" id="createProductForm">
+<form id="createProductForm">
     <label for="title">Nombre:</label>
     <input type="text" name="title">
     <br>
@@ -25,12 +25,6 @@
 
 <ul id="productList"></ul>
 
-<form id="deleteProductForm">
-    <label for="Id">ID del producto</label>
-    <input type="number" name="Id">
-    <br>
-    <button type="submit">Eliminar Producto</button>
-</form>
 
 <script src="socket.io/socket.io.js"></script>
 <script src="js/realTimeProducts.js"></script>
