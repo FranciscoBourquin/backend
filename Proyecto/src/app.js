@@ -44,16 +44,20 @@ socketServer.on("connection", async(socket)=> {
     //Recibimos producto a crear
     socket.on("addProduct", async (jsonData) => {
         const newProduct = await manager.addProduct(jsonData);
-        const products = await manager.getProductById();
+        const products = await manager.getProducts();
         socketServer.emit("productsArray", products);
 
-        //Recibimos id de producto a eliminar
+       // Recibimos id de producto a eliminar
         socket.on("deleteProduct", async(productId)=> {
-            const deleteProduct = await manager.deleteProductById(productId);
-            const products = await manager.getProducts();
-            socketServer.emit("productsArray", products);
+        console.log("Delete product event received on server:", productId);
+        const deleteProduct = await manager.deleteProductById(productId);
+        const products = await manager.getProducts();
+        socketServer.emit("productsArray", products);
+    });
 
-        })
-    })
+    socket.on("disconnect", () => {
+        console.log(`Cliente desconectado con ID: ${socket.id}`);
+    });
+
 })
-
+})
