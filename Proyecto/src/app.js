@@ -1,4 +1,6 @@
 import express from "express";
+import path from "path";
+import { __dirname } from "./utils.js";
 import {Server} from "socket.io";
 import {engine} from "express-handlebars";
 import { viewsRouter } from "./routes/views.routes.js";
@@ -12,16 +14,16 @@ const port = 8080;
 //Para poder procesar respuestas en fomato JSON
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-app.use(express.static("./src/public"));
+app.use(express.static(path.join(__dirname, "public")));
 
-const hhttpServer = app.listen(port, ()=> console.log(`Servidor escuchando en el puerto ${port}`));
+const httpServer = app.listen(port, ()=> console.log(`Servidor escuchando en el puerto ${port}`));
 
-const socketServer = new Server(hhttpServer);
+const socketServer = new Server(httpServer);
 
 //Configuración hbs
 app.engine('.hbs', engine({extname: '.hbs'}));
 app.set('view engine', '.hbs');
-app.set('views', './src/views');
+app.set('views', path.join(__dirname, "views"));
 
 //Rutas
 
@@ -34,7 +36,7 @@ app.use("/api/products", productsRouter);
 //Conexion con router de carritos
 app.use("/api/carts", cartsRouter);
 
-const manager = new ProductManager("./src/products.json");
+const manager = new ProductManager(path.join(__dirname, "products.json"));
 
 socketServer.on("connection", async(socket)=> {
     console.log(`Cliente conectado con ID: ${socket.id}`);
