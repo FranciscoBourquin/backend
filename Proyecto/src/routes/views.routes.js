@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ProductManager } from "../productManager.js";
+import { ProductManager } from "../dao/Managers/productManager.js";
 
 const roleAuth = (req, res, next) => {
     const role = req.query.role;
