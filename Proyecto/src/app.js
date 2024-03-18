@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { __dirname } from "./utils.js";
 import {Server} from "socket.io";
+import { connectDB } from "./dbConnection.js";
 import {engine} from "express-handlebars";
 import { viewsRouter } from "./routes/views.routes.js";
 import { productsRouter } from "./routes/products.routes.js";
@@ -19,6 +20,9 @@ app.use(express.static(path.join(__dirname, "public")));
 const httpServer = app.listen(port, ()=> console.log(`Servidor escuchando en el puerto ${port}`));
 
 const socketServer = new Server(httpServer);
+
+//Conexión a base de datos
+connectDB();
 
 //Configuración hbs
 app.engine('.hbs', engine({extname: '.hbs'}));
