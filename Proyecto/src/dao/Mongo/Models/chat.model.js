@@ -12,4 +12,4 @@ const chatSchema = new mongoose.Schema({
 })
 
 export const messagesModel = mongoose.model(chatColl, chatSchema)
-//Comision vieja 1:25:27
+
