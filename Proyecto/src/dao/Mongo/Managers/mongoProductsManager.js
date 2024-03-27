@@ -16,7 +16,7 @@ export class MongoProductManager {
 
      getProducts = async ()=> {
         try {
-            const products = await this.model.find();
+            const products = await this.model.find().lean();
             return products;
         } catch (error) {
             throw new Error (`Ha ocurrido un error al intentar obtener los productos: ${error.message}`)
@@ -25,7 +25,7 @@ export class MongoProductManager {
 
      getProductById = async (pid)=> {
         try {
-            const product = await this.model.findById(pid);
+            const product = await this.model.findById(pid).lean();
             return product;
         } catch (error) {
             throw new Error(`No se pudo obtener el producto con ID ${pid}: ${error.message}`)
@@ -34,7 +34,7 @@ export class MongoProductManager {
 
      updateProductById = async (pid, updatedInfo)=> {
         try {
-            const updatedProduct = await this.model.findByIdAndUpdate(pid, updatedInfo);
+            const updatedProduct = await this.model.findByIdAndUpdate(pid, updatedInfo).lean();
             return updatedProduct;
         } catch (error) {
             throw new Error(`No se pudo obtener el producto con ID ${pid}: ${error.message}`)
@@ -43,7 +43,7 @@ export class MongoProductManager {
 
      deleteProductById = async (pid)=> {
         try {
-            await this.model.findByIdAndDelete(pid)
+            await this.model.findByIdAndDelete(pid);
             return `Se ha eliminado el producto con ID ${pid}`
         } catch (error) {
             throw new Error(`No se pudo encontrar el producto con ID ${pid}: ${error.message}`)
