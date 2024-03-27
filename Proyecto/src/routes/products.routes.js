@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { ProductManager } from "../dao/Managers/productManager.js";
+import { MongoProductManager } from "../dao/Mongo/Managers/mongoProductsManager.js";
 
-const manager = new ProductManager("./src/products.json");
+const manager = new MongoProductManager();
 
 export const productsRouter = Router();
 
@@ -13,7 +13,7 @@ productsRouter.get("/", async (req, res) => {
         if (limit) {
             products = products.slice(0, limit);
         }
-        res.json(products);
+        res.render("home",{products});
     } catch (error) {
         console.error(`Error al obtener productos: ${error}`);
         res.status(500).json({ error: error.message });
@@ -32,11 +32,11 @@ productsRouter.get("/:pid", async (req, res) => {
     }
 });
 
-// Agregar producto
+// Crear producto
 productsRouter.post("/", async (req, res) => {
     try {
         const productInfo = req.body;
-        const newProduct = await manager.addProduct(productInfo);
+        const newProduct = await manager.createProduct(productInfo);
         res.status(201).json(newProduct);
     } catch (error) {
         console.error(`Error al agregar producto: ${error}`);

@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { CartsManager } from "../dao/Managers/cartsManager.js";
+import { MongoCartsManager } from "../dao/Mongo/Managers/mongoCartsManager.js";
 
 export const cartsRouter = Router();
-const cartManager = new CartsManager("./src/carts.json");
+const cartManager = new MongoCartsManager();
 
 // Crear carrito
 cartsRouter.post("/", async (req, res) => {

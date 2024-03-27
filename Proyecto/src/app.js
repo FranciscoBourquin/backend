@@ -2,12 +2,12 @@ import express from "express";
 import path from "path";
 import { __dirname } from "./utils.js";
 import {Server} from "socket.io";
-import { connectDB } from "./dbConnection.js";
+import { connectDB } from "./config/dbConnection.js";
 import {engine} from "express-handlebars";
 import { viewsRouter } from "./routes/views.routes.js";
 import { productsRouter } from "./routes/products.routes.js";
 import { cartsRouter } from "./routes/carts.routes.js";
-import { ProductManager } from "./productManager.js";
+import { MongoProductManager } from "./dao/Mongo/Managers/mongoProductsManager.js";
 
 const app = express();
 const port = 8080;
@@ -40,7 +40,7 @@ app.use("/api/products", productsRouter);
 //Conexion con router de carritos
 app.use("/api/carts", cartsRouter);
 
-const manager = new ProductManager(path.join(__dirname, "products.json"));
+const manager = new MongoProductManager();
 
 socketServer.on("connection", async(socket)=> {
     console.log(`Cliente conectado con ID: ${socket.id}`);
@@ -49,7 +49,7 @@ socketServer.on("connection", async(socket)=> {
 
     //Recibimos producto a crear
     socket.on("addProduct", async (jsonData) => {
-        const newProduct = await manager.addProduct(jsonData);
+        const newProduct = await manager.createProduct(jsonData);
         const products = await manager.getProducts();
         socketServer.emit("productsArray", products);
 

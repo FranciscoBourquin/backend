@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ProductManager } from "../dao/Managers/productManager.js";
+import { MongoProductManager } from "../dao/Mongo/Managers/mongoProductsManager.js";
 
 const roleAuth = (req, res, next) => {
     const role = req.query.role;
@@ -10,7 +10,7 @@ const roleAuth = (req, res, next) => {
     }
 }
 
-const manager = new ProductManager("./src/products.json")
+const manager = new MongoProductManager();
 export const viewsRouter = Router();
 
 viewsRouter.get("/", async(req, res)=> {
