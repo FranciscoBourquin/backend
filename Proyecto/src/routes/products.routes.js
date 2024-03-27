@@ -13,7 +13,7 @@ productsRouter.get("/", async (req, res) => {
         if (limit) {
             products = products.slice(0, limit);
         }
-        res.render("home",{products});
+        res.json(products);
     } catch (error) {
         console.error(`Error al obtener productos: ${error}`);
         res.status(500).json({ error: error.message });
